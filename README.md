@@ -21,7 +21,9 @@ Open and edit `~/.dav/wallet` and save with following content:
 
 This wallet should have enough balance to perform the necessary transactions.
 Then run:
+
 ```bash
+npm i
 npm run gen-n-reg
 ```
 

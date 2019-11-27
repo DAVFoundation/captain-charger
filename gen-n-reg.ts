@@ -13,7 +13,7 @@ async function main() {
         public: generatedKey.getPublicKeyString(),
         address: generatedKey.getChecksumAddressString(),
     };
-    const keyFile = path.join(os.homedir(), '.dav', identity.address);
+    const keyFile = path.join(os.homedir(), '.dav', 'charger');
     fs.writeFileSync(keyFile, JSON.stringify(identity));
 
     const DAV = SDKFactory({ ethNodeUrl: wallet.nodeUrl });
