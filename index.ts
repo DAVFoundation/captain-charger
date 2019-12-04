@@ -38,8 +38,8 @@ async function handleBid(need: Need<NeedParams>) {
     try {
         console.log('Need', need);
         const bid = await need.createBid(new BidParams({
-            price: '0.0',
-            vehicleId: '1234',
+            price: '1',
+            vehicleId: identity.address,
             availableFrom: 1,
             isCommitted: false
         }));

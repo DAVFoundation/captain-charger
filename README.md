@@ -28,3 +28,9 @@ npm run gen-n-reg
 ```
 
 Copy the new DAV Identity Address which is printed if all goes well.
+
+## Ropsten Faucet
+
+```bash
+curl -X POST  -H "Content-Type: application/json" -d '{"toWhom":"<<ADDRESS>>"}' https://ropsten.faucet.b9lab.com/tap
+```
