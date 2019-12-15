@@ -19,7 +19,7 @@ async function main() {
         const charger = await DAV.getIdentity(identity.address);
         console.log('Charger', charger);
 
-        const needs = await charger.needsForType(new NeedFilterParams({
+        const needs = await charger.needsForType<NeedParams>(new NeedFilterParams({
             location: {
                 lat: 32.050382,
                 long: 34.766149

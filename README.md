@@ -57,7 +57,7 @@ The returned token must be kept for future interactions with the API.
 
 - Response (text): **charger token**
 
-## Status
+### Status
 
 Access current status for charger. Use the token returned by `/register` to authenticate.
 
@@ -70,7 +70,7 @@ Access current status for charger. Use the token returned by `/register` to auth
   - **Committed**: Charger is committed to a mission.
   - **Ready**: Charger can begin charging.
 
-## Started
+### Started
 
 Notify that charging has began. Use the token returned by `/register` to authenticate.
 
@@ -80,7 +80,7 @@ Notify that charging has began. Use the token returned by `/register` to authent
   - **Authorization: Bearer `[charger token]`**
 - Response: **(200 Ok)**
 
-## Complete
+### Complete
 
 Notify that charging has been completed. Use the token returned by `/register` to authenticate.
 
@@ -90,7 +90,7 @@ Notify that charging has been completed. Use the token returned by `/register` t
   - **Authorization: Bearer `[charger token]`**
 - Response: **(200 Ok)**
 
-## Clear
+### Clear
 
 Notify that charger is ready for a new mission after drone has left it. Use the token returned by `/register` to authenticate.
 
@@ -99,3 +99,43 @@ Notify that charger is ready for a new mission after drone has left it. Use the 
 - Headers:
   - **Authorization: Bearer `[charger token]`**
 - Response: **(200 Ok)**
+
+### Example
+
+Register a charger:
+
+```bash
+curl -w "\n" -X POST localhost:3000/register -H"Content-Type:application/json" -d'{"address":"0x8B22d48bd7fFBcE764c60AE2a78128427973DAdB","lat":"32.050382","lon":"34.766149","radius":"1000"}'
+```
+
+Store returned token into environment:
+
+```bash
+export CHARGER_TOKEN=<<TOKEN>>
+```
+
+Get charger status:
+
+```bash
+curl -w "\n" -X GET localhost:3000/status -H"Authorization: Bearer ${CHARGER_TOKEN}"
+```
+
+When status becomes `Ready` - Start the mission:
+
+```bash
+curl -w "\n" -X POST localhost:3000/started -H"Authorization: Bearer ${CHARGER_TOKEN}"
+```
+
+When charging is complete:
+
+```bash
+curl -w "\n" -X POST localhost:3000/complete -H"Authorization: Bearer ${CHARGER_TOKEN}"
+```
+
+After drone has cleared the charger and charger is again ready for a new mission:
+
+```bash
+curl -w "\n" -X POST localhost:3000/clear -H"Authorization: Bearer ${CHARGER_TOKEN}"
+```
+
+Status should return to `Waiting` until a new mission has been created.
