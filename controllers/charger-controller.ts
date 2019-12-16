@@ -9,6 +9,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import Identity from 'dav-js/dist/Identity';
 import { Observable } from 'dav-js/dist/common-types';
+import * as util from 'util'
 
 const wallet = JSON.parse(fs.readFileSync(path.join(os.homedir(), '.dav', 'wallet')).toString());
 const DAV = SDKFactory({
@@ -67,7 +68,7 @@ export default class ChargerController {
             }
 
             const charger = await DAV.getIdentity(address);
-            Logger.Info(`Charger ${JSON.stringify(charger)}`);
+            Logger.Info(`Charger ${util.inspect(charger)}`);
 
             const chargerInfo: ChargerInfo = {
                 identity: charger,
@@ -100,10 +101,10 @@ export default class ChargerController {
 
     private static async handleNeed(chargerInfo: ChargerInfo, need: Need<NeedParams>) {
         try {
-            Logger.Info(`Got Need ${need} for ${chargerInfo}`);
+            Logger.Info(`Got Need ${util.inspect(need)} for ${util.inspect(chargerInfo)}`);
 
             if (chargerInfo.status !== Status.Waiting) {
-                Logger.Info(`No Bid - Already busy ${chargerInfo}`);
+                Logger.Info(`No Bid - Already busy ${util.inspect(chargerInfo)}`);
                 return;
             }
 
@@ -114,15 +115,15 @@ export default class ChargerController {
                 isCommitted: false
             }));
 
-            Logger.Info(`Waiting on Bid ${bid} for ${chargerInfo}`);
+            Logger.Info(`Waiting on Bid ${util.inspect(bid)} for ${util.inspect(chargerInfo)}`);
 
             const commitmentRequests = await bid.commitmentRequests();
             commitmentRequests.subscribe(async commitmentRequest => {
                 try {
-                    Logger.Info(`CommitmentRequest ${commitmentRequest} for ${chargerInfo}`);
+                    Logger.Info(`CommitmentRequest ${util.inspect(commitmentRequest)} for ${util.inspect(chargerInfo)}`);
 
                     if (chargerInfo.status !== Status.Waiting) {
-                        Logger.Info(`No Confirm - Already busy ${chargerInfo}`);
+                        Logger.Info(`No Confirm - Already busy ${util.inspect(chargerInfo)}`);
                         return;
                     }
                     chargerInfo.status = Status.Committed;
@@ -135,7 +136,7 @@ export default class ChargerController {
 
             const messages = await bid.messages();
             messages.subscribe(message => {
-                Logger.Info(`Bid Message ${message} for ${chargerInfo}`);
+                Logger.Info(`Bid Message ${util.inspect(message)} for ${util.inspect(chargerInfo)}`);
             });
 
             const missions = await bid.missions();
@@ -149,7 +150,7 @@ export default class ChargerController {
     private static async handleMission(chargerInfo: ChargerInfo, mission: Mission<MissionParams>) {
         try {
             if (chargerInfo.status !== Status.Committed) {
-                Logger.Info(`No Mission - Already busy ${chargerInfo}`);
+                Logger.Info(`No Mission - Already busy ${util.inspect(chargerInfo)}`);
                 return;
             }
             chargerInfo.mission = mission;
