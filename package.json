@@ -5,7 +5,8 @@
   "main": "index.ts",
   "scripts": {
     "preinstall": "find node_modules/ -name .git -type d -exec rm -rf {} + || exit 0",
-    "start": "clear && nodemon index.ts",
+    "start-server": "clear && nodemon index.ts",
+    "start-ui": "clear && cd web-ui && ng serve --open",
     "postinstall": "if [ -e ../dav-js ]; then npm link ../dav-js; fi",
     "gen-n-reg": "node -r ts-node/register gen-n-reg.ts",
     "integration-test": "node -r ts-node/register integration-test.ts"
