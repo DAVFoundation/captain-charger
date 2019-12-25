@@ -29,6 +29,7 @@
     "@overnightjs/jwt": "^1.1.14",
     "@overnightjs/logger": "^1.1.9",
     "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "dav-js": "github:DAVFoundation/dav-js",
     "ethereumjs-wallet": "^0.6.3",
     "express": "^4.17.1"
@@ -37,9 +38,15 @@
     "@types/express": "^4.17.2",
     "@types/express-jwt": "0.0.42",
     "@types/jsonwebtoken": "^8.3.5",
+    "@types/cors": "^2.8.6",
     "@types/node": "^12.12.11",
     "nodemon": "^2.0.1",
     "ts-node": "8.5.2",
     "typescript": "3.7.2"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "web-ui/**/*"
+    ]
   }
 }

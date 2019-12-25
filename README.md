@@ -35,6 +35,20 @@ Copy the new DAV Identity Address which is printed if all goes well.
 curl -X POST  -H "Content-Type: application/json" -d '{"toWhom":"<<ADDRESS>>"}' https://ropsten.faucet.b9lab.com/tap
 ```
 
+## Usage
+
+Run:
+
+```bash
+npm run start-server
+```
+
+In another terminal:
+
+```bash
+npm run start-ui
+```
+
 ## API
 
 ### Register

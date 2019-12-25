@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ViewContainerRef, ComponentFactoryResolver, ComponentRef, ComponentFactory } from '@angular/core';
+import { ChargerComponent } from './charger/charger.component';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,12 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'web-ui';
+  @ViewChild('chargers', { static: true, read: ViewContainerRef }) chargers: ViewContainerRef;
+
+  constructor(private resolver: ComponentFactoryResolver) { }
+
+  addCharger() {
+    const factory = this.resolver.resolveComponentFactory(ChargerComponent);
+    this.chargers.createComponent(factory);
+  }
 }

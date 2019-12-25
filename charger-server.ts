@@ -1,5 +1,6 @@
 import * as express from "express"
 import * as bodyParser from 'body-parser';
+import * as cors from 'cors';
 import { Server } from '@overnightjs/core';
 import { Logger } from '@overnightjs/logger';
 import ChargerController from './controllers/charger-controller';
@@ -8,6 +9,11 @@ export default class ChargerServer extends Server {
     constructor() {
         super(true);
 
+        this.app.use(cors({
+            origin: ['http://localhost:4200'],
+            methods: ['GET', 'POST'],
+            allowedHeaders: ['Content-Type', 'Authorization']
+        }));
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: true }));
 
