@@ -37,6 +37,10 @@ curl -X POST  -H "Content-Type: application/json" -d '{"toWhom":"<<ADDRESS>>"}' 
 
 ## Usage
 
+Follow [these instructions](https://github.com/DAVFoundation/missioncontrol) to have a locally running DAVNN cluster using Minikube.
+After that you should have a port-forwarding setup for the DAVNN server.
+These are required for the captain-charger server to communicate with captain-drone server.
+
 Run:
 
 ```bash
