@@ -10,11 +10,12 @@ import * as fs from 'fs';
 import Identity from 'dav-js/dist/Identity';
 import { Observable } from 'dav-js/dist/common-types';
 import * as util from 'util'
+const config = require('../env');
 
 const wallet = JSON.parse(fs.readFileSync(path.join(os.homedir(), '.dav', 'wallet')).toString());
 const DAV = SDKFactory({
-    apiSeedUrls: ['http://localhost:8080'],
-    kafkaSeedUrls: ['localhost:9092'],
+    apiSeedUrls: config.apiSeedUrls,
+    kafkaSeedUrls: config.kafkaSeedUrls,
     ethNodeUrl: wallet.nodeUrl
 });
 
