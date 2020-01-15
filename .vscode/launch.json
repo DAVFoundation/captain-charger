@@ -26,6 +26,22 @@
             "skipFiles": [
                 "<node_internals>/**"
             ]
-        }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Charger Gen-n-Reg",
+            "runtimeExecutable": "~/.nvm/versions/node/v11.15.0/bin/node",
+            "runtimeArgs": [
+                "-r",
+                "ts-node/register",
+            ],
+            "args": [
+                "${workspaceFolder}/gen-n-reg.ts"
+            ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
     ]
 }
