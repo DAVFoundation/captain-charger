@@ -8,7 +8,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
 import Identity from 'dav-js/dist/Identity';
-import { Observable } from 'dav-js/dist/common-types';
+import { Observable, ILocation } from 'dav-js/dist/common-types';
 import * as util from 'util'
 const config = require('../env');
 
@@ -30,6 +30,7 @@ enum Status {
 interface ChargerInfo {
     identity: Identity;
     status: Status;
+    location: ILocation;
     needs?: Observable<Need<NeedParams>>;
     mission?: Mission<MissionParams>;
 }
@@ -71,17 +72,19 @@ export default class ChargerController {
             const charger = await DAV.getIdentity(address);
             Logger.Info(`Charger ${util.inspect(charger)}`);
 
+            const location = {
+                lat: parseFloat(lat),
+                long: parseFloat(lon)
+            };
             const chargerInfo: ChargerInfo = {
                 identity: charger,
-                status: Status.Waiting
+                status: Status.Waiting,
+                location
             };
             this.chargers[address] = chargerInfo;
 
             const needs = await charger.needsForType<NeedParams>(new NeedFilterParams({
-                location: {
-                    lat: parseFloat(lat),
-                    long: parseFloat(lon)
-                },
+                location,
                 radius: parseFloat(radius),
             }));
 
@@ -113,7 +116,8 @@ export default class ChargerController {
                 price: '1',
                 vehicleId: chargerInfo.identity.davId,
                 availableFrom: 1,
-                isCommitted: false
+                isCommitted: false,
+                entranceLocation: chargerInfo.location
             }));
 
             Logger.Info(`Waiting on Bid ${util.inspect(bid)} for ${util.inspect(chargerInfo)}`);

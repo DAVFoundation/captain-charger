@@ -42,7 +42,11 @@ async function handleBid(need: Need<NeedParams>) {
             price: '1',
             vehicleId: identity.address,
             availableFrom: 1,
-            isCommitted: false
+            isCommitted: false,
+            entranceLocation: {
+                lat: 32.050382,
+                long: 34.766149
+            }
         }));
         console.log('Waiting on Bid', bid);
 
