@@ -33,6 +33,7 @@ interface ChargerInfo {
     location: ILocation;
     needs?: Observable<Need<NeedParams>>;
     mission?: Mission<MissionParams>;
+    logs: string[];
 }
 
 @Controller('')
@@ -52,6 +53,7 @@ export default class ChargerController {
 
             res.status(200).json({
                 status: chargerInfo.status || Status.Waiting,
+                logs: chargerInfo.logs
             });
         } catch (err) {
             Logger.Err(err, true);
@@ -70,7 +72,6 @@ export default class ChargerController {
             }
 
             const charger = await DAV.getIdentity(address);
-            Logger.Info(`Charger ${util.inspect(charger)}`);
 
             const location = {
                 lat: parseFloat(lat),
@@ -79,8 +80,12 @@ export default class ChargerController {
             const chargerInfo: ChargerInfo = {
                 identity: charger,
                 status: Status.Waiting,
-                location
+                location,
+                logs: []
             };
+
+            ChargerController.log(chargerInfo, `Charger ${util.inspect(charger)}`);
+
             this.chargers[address] = chargerInfo;
 
             const needs = await charger.needsForType<NeedParams>(new NeedFilterParams({
@@ -103,12 +108,18 @@ export default class ChargerController {
         }
     }
 
+    private static log(chargerInfo: ChargerInfo, msg: string) {
+        chargerInfo.logs.push(msg);
+        Logger.Info(msg);
+    }
+
     private static async handleNeed(chargerInfo: ChargerInfo, need: Need<NeedParams>) {
         try {
-            Logger.Info(`Got Need ${util.inspect(need)} for ${util.inspect(chargerInfo)}`);
+
+            ChargerController.log(chargerInfo, `Got Need ${util.inspect(need)} for ${util.inspect(chargerInfo)}`);
 
             if (chargerInfo.status !== Status.Waiting) {
-                Logger.Info(`No Bid - Already busy ${util.inspect(chargerInfo)}`);
+                ChargerController.log(chargerInfo, `No Bid - Already busy ${util.inspect(chargerInfo)}`);
                 return;
             }
 
@@ -120,15 +131,15 @@ export default class ChargerController {
                 entranceLocation: chargerInfo.location
             }));
 
-            Logger.Info(`Waiting on Bid ${util.inspect(bid)} for ${util.inspect(chargerInfo)}`);
+            ChargerController.log(chargerInfo, `Waiting on Bid ${util.inspect(bid)} for ${util.inspect(chargerInfo)}`);
 
             const commitmentRequests = await bid.commitmentRequests();
             commitmentRequests.subscribe(async commitmentRequest => {
                 try {
-                    Logger.Info(`CommitmentRequest ${util.inspect(commitmentRequest)} for ${util.inspect(chargerInfo)}`);
+                    ChargerController.log(chargerInfo, `CommitmentRequest ${util.inspect(commitmentRequest)} for ${util.inspect(chargerInfo)}`);
 
                     if (chargerInfo.status !== Status.Waiting) {
-                        Logger.Info(`No Confirm - Already busy ${util.inspect(chargerInfo)}`);
+                        ChargerController.log(chargerInfo, `No Confirm - Already busy ${util.inspect(chargerInfo)}`);
                         return;
                     }
                     chargerInfo.status = Status.Committed;
@@ -141,7 +152,7 @@ export default class ChargerController {
 
             const messages = await bid.messages();
             messages.subscribe(message => {
-                Logger.Info(`Bid Message ${util.inspect(message)} for ${util.inspect(chargerInfo)}`);
+                ChargerController.log(chargerInfo, `Bid Message ${util.inspect(message)} for ${util.inspect(chargerInfo)}`);
             });
 
             const missions = await bid.missions();
@@ -155,7 +166,7 @@ export default class ChargerController {
     private static async handleMission(chargerInfo: ChargerInfo, mission: Mission<MissionParams>) {
         try {
             if (chargerInfo.status !== Status.Committed) {
-                Logger.Info(`No Mission - Already busy ${util.inspect(chargerInfo)}`);
+                ChargerController.log(chargerInfo, `No Mission - Already busy ${util.inspect(chargerInfo)}`);
                 return;
             }
             chargerInfo.mission = mission;
@@ -175,18 +186,18 @@ export default class ChargerController {
             const mission = chargerInfo.mission as Mission<MissionParams>;
 
             if (message.params instanceof ChargingArrivalMessageParams) {
-                console.log('Mission Message', 'Charging Arrival');
+                ChargerController.log(chargerInfo, 'Mission Message: Charging Arrival');
                 chargerInfo.status = Status.Ready;
             }
             else if (message.params instanceof StatusRequestMessageParams) {
-                console.log('Mission Message', 'Status Request');
+                ChargerController.log(chargerInfo, 'Mission Message: Status Request');
                 await mission.sendMessage(new ProviderStatusMessageParams({ finishEta: 1 }));
             }
             else if (message.params instanceof DroneStatusMessageParams) {
-                console.log('Mission Message', 'Drone Status', message.params);
+                ChargerController.log(chargerInfo, `Mission Message: Drone Status ${message.params}`);
             }
             else {
-                console.log('Mission Message', message);
+                ChargerController.log(chargerInfo, `Mission Message ${message}`);
             }
         }
         catch (err) {

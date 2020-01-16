@@ -14,20 +14,25 @@ export class ChargerComponent implements OnInit {
   radius: string;
   token: string;
   status: string;
+  logs: string[];
 
   constructor(private server: ServerService) {
     this.address = '0x8B22d48bd7fFBcE764c60AE2a78128427973DAdB';
     this.lat = '32.050382';
     this.lon = '34.766149';
     this.radius = '1000';
+    this.logs = [];
   }
 
   async ngOnInit() {
     interval(500).subscribe(async () => {
       if (!!this.token) {
-        this.status = (await this.server.getStatus(this.token).toPromise()).status;
+        const res = (await this.server.getStatus(this.token).toPromise());
+        this.status = res.status;
+        this.logs = res.logs;
       } else {
         this.status = '';
+        this.logs = [];
       }
     });
   }

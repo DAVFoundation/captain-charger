@@ -29,4 +29,7 @@
     <button mat-button [disabled]="status!=='Ready'" (click)="completed()" color="primary">Completed</button>
     <button mat-button [disabled]="status!=='Ready'" (click)="cleared()" color="primary">Cleared</button>
   </mat-card-actions>
+  <div class="logs">
+    <div class="log" *ngFor="let log of logs">{{log}}</div>
+  </div>
 </mat-card>
