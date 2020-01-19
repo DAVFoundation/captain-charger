@@ -10,6 +10,7 @@ import * as fs from 'fs';
 import Identity from 'dav-js/dist/Identity';
 import { Observable, ILocation } from 'dav-js/dist/common-types';
 import * as util from 'util'
+import getDavBalance from '../get-dav-balance';
 const config = require('../env');
 
 const wallet = JSON.parse(fs.readFileSync(path.join(os.homedir(), '.dav', 'wallet')).toString());
@@ -42,7 +43,7 @@ export default class ChargerController {
 
     @Get('status')
     @Middleware(jwtMgr.middleware)
-    public status(req: ISecureRequest, res: Response) {
+    public async status(req: ISecureRequest, res: Response) {
         try {
             const id = req.payload.id;
             const chargerInfo = this.chargers[id];
@@ -51,9 +52,11 @@ export default class ChargerController {
                 return;
             }
 
+            const balance = await getDavBalance(chargerInfo.identity.davId, wallet.nodeUrl, wallet.networkType);
             res.status(200).json({
                 status: chargerInfo.status || Status.Waiting,
-                logs: chargerInfo.logs
+                logs: chargerInfo.logs,
+                balance
             });
         } catch (err) {
             Logger.Err(err, true);

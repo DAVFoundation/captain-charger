@@ -14,6 +14,7 @@ export class ChargerComponent implements OnInit {
   radius: string;
   token: string;
   status: string;
+  balance: string;
   logs: string[];
 
   constructor(private server: ServerService) {
@@ -30,6 +31,7 @@ export class ChargerComponent implements OnInit {
         const res = (await this.server.getStatus(this.token).toPromise());
         this.status = res.status;
         this.logs = res.logs;
+        this.balance = res.balance;
       } else {
         this.status = '';
         this.logs = [];
